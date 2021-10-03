@@ -22,9 +22,11 @@ public class StockMonitor {
         Product product = getProduct(productId);
 
         Calendar calendar = today.getCurrentCalendar();
-        Date endDate = calendar.getTime();
+
         calendar.add(Calendar.YEAR, -1);
         Date startDate = calendar.getTime();
+        calendar.add(Calendar.DATE,30);
+        Date endDate = calendar.getTime();
 
         SalesTotal total = salesHistory.getSalesTotal(product, startDate, endDate);
 

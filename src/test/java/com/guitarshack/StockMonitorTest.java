@@ -3,6 +3,7 @@ package com.guitarshack;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -10,33 +11,47 @@ import java.util.Date;
 
 public class StockMonitorTest {
 
+    private SalesHistory salesHistory;
+    private Date startDate;
+    private Product product;
+    private Alert alert;
+    private Date endDate;
+
     @Test
     public void alertSentWhenProductReachesReorderLevel() {
-        Alert alert = mock(Alert.class);
-        Product product = new Product(811, 27, 14);
-        Service<Product> productService = mock(Service.class);
-        when(productService.getObject(anyString())).thenReturn(product);
-        Service<SalesTotal> salesTotalService = mock(Service.class);
-        when(salesTotalService.getObject(anyString())).thenReturn(new SalesTotal());
-        StockMonitor stockMonitor = new StockMonitor(alert, productService, new SalesHistory(salesTotalService), new Today());
-
-        stockMonitor.productSold(811, 27);
 
         verify(alert).send(product);
     }
 
     @Test
     public void startDateIsSameDateAYearAgo() {
-        SalesHistory salesHistory = mock(SalesHistory.class);
+
+        verify(salesHistory).getSalesTotal(any(),eq(startDate),any());
+    }
+
+    @Test
+    public void endDateIs30DaysFromTodayAYearAgo() {
+
+
+        verify(salesHistory).getSalesTotal(any(), any(), eq(endDate));
+    }
+
+    @Before
+    public void setUp() {
+        alert = mock(Alert.class);
+
+        salesHistory = mock(SalesHistory.class);
         when(salesHistory.getSalesTotal(any(),any(),any())).thenReturn(new SalesTotal());
 
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
         calendar.add(Calendar.YEAR, -1);
-        Date startDate = calendar.getTime();
+        startDate = calendar.getTime();
+        calendar.add(Calendar.DATE, 30);
+        endDate = calendar.getTime();
 
 
-        Product product = new Product(811, 27, 14);
+        product = new Product(811, 27, 14);
         Service<Product> productService = mock(Service.class);
         when(productService.getObject(anyString())).thenReturn(product);
 
@@ -45,9 +60,8 @@ public class StockMonitorTest {
         todayCalender.setTime(now);
         when(today.getCurrentCalendar()).thenReturn(todayCalender);
 
-        StockMonitor stockMonitor = new StockMonitor(mock(Alert.class), productService, salesHistory, today);
+        StockMonitor stockMonitor = new StockMonitor(alert, productService, salesHistory, today);
         stockMonitor.productSold(811, 27);
-
-        verify(salesHistory).getSalesTotal(any(),eq(startDate),any());
     }
+
 }
