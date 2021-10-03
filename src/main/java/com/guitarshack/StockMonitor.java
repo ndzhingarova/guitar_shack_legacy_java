@@ -9,18 +9,19 @@ public class StockMonitor {
     private final Alert alert;
     private final Service<Product> productService;
     private final SalesHistory salesHistory;
+    private final Today today;
 
-    public StockMonitor(Alert alert, Service<Product> productService, SalesHistory salesHistory) {
+    public StockMonitor(Alert alert, Service<Product> productService, SalesHistory salesHistory, Today today) {
         this.alert = alert;
         this.productService = productService;
         this.salesHistory = salesHistory;
+        this.today = today;
     }
 
     public void productSold(int productId, int quantity) {
         Product product = getProduct(productId);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(Calendar.getInstance().getTime());
+        Calendar calendar = today.getCurrentCalendar();
         Date endDate = calendar.getTime();
         calendar.add(Calendar.DATE, -30);
         Date startDate = calendar.getTime();
