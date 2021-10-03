@@ -19,15 +19,7 @@ public class StockMonitor {
     }
 
     public void productSold(int productId, int quantity) {
-        Map<String, Object> params = new HashMap<>() {{
-            put("id", productId);
-        }};
-        String paramString = "?";
-
-        for (String key : params.keySet()) {
-            paramString += key + "=" + params.get(key).toString() + "&";
-        }
-        Product product = productService.getObject(paramString);
+        Product product = getProduct(productId);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(Calendar.getInstance().getTime());
         Date endDate = calendar.getTime();
@@ -49,6 +41,19 @@ public class StockMonitor {
         SalesTotal total = salesTotalService.getObject(paramString1);
         if (product.getStock() - quantity <= (int) ((double) (total.getTotal() / 30) * product.getLeadTime()))
             alert.send(product);
+    }
+
+    private Product getProduct(int productId) {
+        Map<String, Object> params = new HashMap<>() {{
+            put("id", productId);
+        }};
+        String paramString = "?";
+
+        for (String key : params.keySet()) {
+            paramString += key + "=" + params.get(key).toString() + "&";
+        }
+        Product product = productService.getObject(paramString);
+        return product;
     }
 
 }
