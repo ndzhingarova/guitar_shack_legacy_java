@@ -14,7 +14,7 @@ public class StockMonitorTest {
         when(productService.getObject(anyString())).thenReturn(product);
         Service<SalesTotal> salesTotalService = mock(Service.class);
         when(salesTotalService.getObject(anyString())).thenReturn(new SalesTotal());
-        StockMonitor stockMonitor = new StockMonitor(alert, productService, salesTotalService, new SalesHistory(salesTotalService));
+        StockMonitor stockMonitor = new StockMonitor(alert, productService, new SalesHistory(salesTotalService));
 
         stockMonitor.productSold(811, 27);
 

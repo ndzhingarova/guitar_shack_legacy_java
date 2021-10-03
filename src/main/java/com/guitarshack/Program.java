@@ -13,7 +13,7 @@ public class Program {
                             ". Only " + product.getStock() + " remaining in stock");
         },
                 new Service<>("https://6hr1390c1j.execute-api.us-east-2.amazonaws.com/default/product", Product.class),
-                salesTotalService, new SalesHistory(salesTotalService));
+                new SalesHistory(salesTotalService));
     }
 
     public static void main(String[] args) {

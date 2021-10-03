@@ -13,7 +13,7 @@ public class SalesHistory {
         this.salesTotalService = salesTotalService;
     }
 
-    SalesTotal getSalesTotal(Product product, Date endDate, Date startDate) {
+    SalesTotal getSalesTotal(Product product, Date startDate, Date endDate) {
         DateFormat format = new SimpleDateFormat("M/d/yyyy");
         Map<String, Object> params1 = new HashMap<>() {{
             put("productId", product.getId());
