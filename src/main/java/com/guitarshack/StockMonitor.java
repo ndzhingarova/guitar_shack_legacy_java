@@ -25,6 +25,12 @@ public class StockMonitor {
         Date endDate = calendar.getTime();
         calendar.add(Calendar.DATE, -30);
         Date startDate = calendar.getTime();
+        SalesTotal total = getSalesTotal(product, endDate, startDate);
+        if (product.getStock() - quantity <= (int) ((double) (total.getTotal() / 30) * product.getLeadTime()))
+            alert.send(product);
+    }
+
+    private SalesTotal getSalesTotal(Product product, Date endDate, Date startDate) {
         DateFormat format = new SimpleDateFormat("M/d/yyyy");
         Map<String, Object> params1 = new HashMap<>() {{
             put("productId", product.getId());
@@ -39,8 +45,7 @@ public class StockMonitor {
         }
 
         SalesTotal total = salesTotalService.getObject(paramString1);
-        if (product.getStock() - quantity <= (int) ((double) (total.getTotal() / 30) * product.getLeadTime()))
-            alert.send(product);
+        return total;
     }
 
     private Product getProduct(int productId) {
