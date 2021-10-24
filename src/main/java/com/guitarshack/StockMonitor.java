@@ -1,50 +1,22 @@
 package com.guitarshack;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 public class StockMonitor {
     private final Alert alert;
-    private final Service<Product> productService;
-    private final SalesHistory salesHistory;
-    private final Today today;
+    private final Warehouse warehouse;
+    private final ReorderLevelCalculator reorderLevelCalculator;
 
-    public StockMonitor(Alert alert, Service<Product> productService, SalesHistory salesHistory, Today today) {
+    public StockMonitor(Alert alert, Warehouse warehouse, ReorderLevelCalculator reorderLevelCalculator) {
         this.alert = alert;
-        this.productService = productService;
-        this.salesHistory = salesHistory;
-        this.today = today;
+        this.warehouse = warehouse;
+        this.reorderLevelCalculator = reorderLevelCalculator;
     }
 
     public void productSold(int productId, int quantity) {
-        Product product = getProduct(productId);
+        Product product = warehouse.getProduct(productId);
 
-        Calendar calendar = today.getCurrentCalendar();
-
-        calendar.add(Calendar.YEAR, -1);
-        Date startDate = calendar.getTime();
-        calendar.add(Calendar.DATE,30);
-        Date endDate = calendar.getTime();
-
-        SalesTotal total = salesHistory.getSalesTotal(product, startDate, endDate);
-
-        if (product.getStock() - quantity <= (int) ((double) (total.getTotal() / 30) * product.getLeadTime()))
+        int reorderLevel = reorderLevelCalculator.getReorderLevel(product);
+        if (product.getStock() - quantity <= reorderLevel)
             alert.send(product);
-    }
-
-    private Product getProduct(int productId) {
-        Map<String, Object> params = new HashMap<>() {{
-            put("id", productId);
-        }};
-        String paramString = "?";
-
-        for (String key : params.keySet()) {
-            paramString += key + "=" + params.get(key).toString() + "&";
-        }
-        Product product = productService.getObject(paramString);
-        return product;
     }
 
 }

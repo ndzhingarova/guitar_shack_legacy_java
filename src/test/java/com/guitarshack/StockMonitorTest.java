@@ -60,7 +60,7 @@ public class StockMonitorTest {
         todayCalender.setTime(now);
         when(today.getCurrentCalendar()).thenReturn(todayCalender);
 
-        StockMonitor stockMonitor = new StockMonitor(alert, productService, salesHistory, today);
+        StockMonitor stockMonitor = new StockMonitor(alert, new Warehouse(productService), new ReorderLevelCalculator(salesHistory, today));
         stockMonitor.productSold(811, 27);
     }
 
